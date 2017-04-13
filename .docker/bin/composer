@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+project_name="SANDBOX"
+
+./check-env.sh
+
+echo "Running composer for ${project_name} project..."
+docker run \
+    --rm \
+    -it \
+    -v $PWD/../../www:/usr/share/nginx/www \
+    -v $COMPOSER_HOME:/composer \
+    sandbox_php composer "$@"

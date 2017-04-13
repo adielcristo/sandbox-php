@@ -1,0 +1,37 @@
+version: "2"
+
+services:
+    nginx:
+        image: nginx
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            # folders
+            - ../www:/usr/share/nginx/www
+            - ../var/tmp:/var/tmp
+            - ../var/log:/var/log
+            # files
+            - ./services/nginx/sandbox.conf:/etc/nginx/conf.d/default.conf
+
+    php:
+        image: sandbox_php
+        build:
+            context: ./
+            dockerfile: ./services/php/dockerfile
+        restart: always
+        extra_hosts:
+            # Insert your local IP
+            - "dockerhost:{{your-ip-here}}"
+        volumes:
+            # folders
+            - ../www:/usr/share/nginx/www
+            - ../var/tmp:/var/tmp
+            - ../var/log:/var/log
+            - $COMPOSER_HOME:/composer
+            # files
+            - ./services/php/php.ini:/usr/local/etc/php/php.ini
+            - ./services/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+        working_dir: /usr/share/nginx/www
+        environment:
+            PHP_IDE_CONFIG: "serverName=docker"

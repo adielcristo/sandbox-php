@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+project_name="SANDBOX"
+
+echo "Stopping docker services for ${project_name} project..."
+cd ..
+docker-compose \
+    -p ${project_name} \
+    down "$@"

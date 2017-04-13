@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+project_name="SANDBOX"
+
+./check-env.sh
+
+echo "Running bash for sandbox_php_1 container..."
+docker exec \
+    -it \
+    sandbox_php_1 bash "$@"

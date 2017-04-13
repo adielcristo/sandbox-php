@@ -1,0 +1,37 @@
+FROM php:fpm
+
+MAINTAINER Adiel Cristo <adielcristo@gmail.com>
+
+# PHP extensions
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git \
+        unzip \
+        zip && \
+    docker-php-ext-install \
+        mysqli \
+        pdo \
+        pdo_mysql && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* && \
+    yes | pecl install xdebug
+
+# Register the COMPOSER_HOME environment variable
+ENV COMPOSER_HOME /composer
+
+# Add Composer bin directory to PATH
+ENV PATH $PATH:/composer/vendor/bin
+
+# Download and setup Composer
+RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
+    && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
+    && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) \
+            !== trim(file_get_contents('/tmp/composer-setup.sig'))) { \
+        unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); \
+    }" \
+    && php /tmp/composer-setup.php \
+        --install-dir=/usr/local/bin \
+        --filename=composer \
+    && php -r "unlink('/tmp/composer-setup.php');"
+
+WORKDIR "/usr/share/nginx/www"
